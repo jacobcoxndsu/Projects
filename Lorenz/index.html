@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="three.min.js"></script>
+    </head>
+    <body></body>
+    <script>
+        var x = 1;
+        var y = 1;
+        var z = 1;
+        
+        var a = 10;
+        var b = 8/3;
+        var c = 28;
+        
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 10000 );
+        
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+        
+        //var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        //var cube = new THREE.Mesh( geometry, material );
+        //scene.add( cube );
+
+        camera.position.z = 5;
+
+        var animate = function () {
+            requestAnimationFrame( animate );
+            
+            if(x < 10){
+                var dx = a * (y - x);
+                var dy = x * (b - z) - y;
+                var dz = x * y - c * z;
+                x = x + dx;
+                y = y + dy;
+                z = z + dz;
+                
+                var geometry = new THREE.BoxGeometry( x, y, z );
+            
+                var cube = new THREE.Mesh( geometry, material );
+                scene.add( cube );
+            }
+            
+            
+           /* var geometry = new THREE.BufferGeometry();
+            geometry.addAttribute( 'position', new THREE.BufferAttribute(3, 3, z) );
+            geometry.addAttribute( 'customColor', new THREE.BufferAttribute( 0x00ff00, 3 ) );
+            geometry.addAttribute( 'size', new THREE.BufferAttribute( 10, 1 ) );
+            
+            //var geometry = new THREE.BoxGeometry( x, y, z, 5);
+            var point = new THREE.Points(geometry, material);
+            scene.add(point);*/
+            
+            cube.rotation.x += 0.1;
+            cube.rotation.y += 0.1;
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+    </script>
+</html>
