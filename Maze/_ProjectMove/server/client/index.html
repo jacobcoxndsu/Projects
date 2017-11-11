@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="client/js/Player.js"></script>
+    <script src="client/js/Room.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0px;
+        }
+        
+        canvas {
+            position: absolute;
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <canvas id="ui" z-index=10 width=200 height=200></canvas>
+    <script>
+        var socket = io();
+        var id = null;
+
+        var test = false;
+
+        socket.on('playerId', function(data) {
+            id = data.id;
+        });
+
+        //CANVAS VARIABLES
+        var canvas = document.getElementById('canvas');
+        var c = canvas.getContext('2d');
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        var cols = 15;
+        var rows = 9;
+        var colWidth = width / cols;
+        var rowHeight = height / rows;
+
+        var Cell = function(x, y, w, wall, color) {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.wall = wall;
+            this.color = color;
+            this.id = null;
+
+            this.show = function(context) {
+                if (this.wall) {
+                    context.fillStyle = 'black';
+                } else {
+                    context.fillStyle = this.color;
+                }
+                context.fillRect(this.x, this.y, this.w, this.w);
+                //context.strokeStyle = 'white';
+                //context.strokeRect(this.x, this.y, this.w, this.w);
+            }
+        }
+
+        //UI Canvas Variables
+        var ui = document.getElementById('ui');
+        var uic = ui.getContext('2d');
+        ui.width = uic.width = width;
+        ui.height = uic.height = height;
+
+        //PLAYER_LIST is a list of objects
+        var PLAYER_LIST = [];
+        //ROOM is only an object, a player can only be in one room at a time.
+        var ROOM = {};
+        var GRID = [];
+        var cells = [];
+
+        var Img = new Image();
+        Img.src = 'client/res/cobble.png';
+
+        //RENDER LOOP FOR THE GAME
+        var draw = function() {
+            c.resetTransform();
+            c.clearRect(0, 0, width, height);
+            c.fillStyle = 'darkGray';
+            c.fillRect(0, 0, width, height);
+            //Draw the room
+            /*var x = 0;
+            var y = 0;
+            var swap = true;
+            for (var j = 0; j < rows; j++) {
+            	for (var k = 0; k < cols; k++) {
+            		if (swap) {
+            			c.fillStyle = ROOM.color;
+            			swap = false;
+            		} else if (!swap) {
+            			c.fillStyle = 'white';
+            			swap = true;
+            		}
+            		//c.fillRect(x, y, colWidth, rowHeight);
+            		c.drawImage(Img, x, y, colWidth, rowHeight);
+            		x += colWidth;
+            	}
+            	y += rowHeight;
+            	x = 0;
+            }*/
+
+            var disX = 0;
+            var disY = 0;
+            var screenX = Math.floor(canvas.width / 2);
+            var screenY = Math.floor(canvas.height / 2);
+            for (var i = 0; i < PLAYER_LIST.length; i++) {
+                if (PLAYER_LIST[i].id === id) {
+                    disX = (screenX - PLAYER_LIST[i].x);
+                    disY = (screenY - PLAYER_LIST[i].y);
+                }
+            }
+
+            c.translate(disX, disY);
+
+
+
+            if (cells.length > 0) {
+                for (var i = 0; i < cells.length; i++) {
+                    cells[i].show(c);
+                }
+            }
+
+            //draw the players
+            for (var i = 0; i < PLAYER_LIST.length; i++) {
+                var player = PLAYER_LIST[i];
+                c.beginPath();
+                c.fillStyle = player.color;
+                c.arc(player.x, player.y, player.radius, 0, 2 * Math.PI, false);
+                c.fill();
+            }
+
+            uic.clearRect(0, 0, width, height);
+            var grd = uic.createRadialGradient(width / 2, height / 2, height / 2, width / 2, height / 2, height - 20);
+            grd.addColorStop(0, 'rgba(0, 0, 0, .1)');
+            grd.addColorStop(1, 'rgb(0, 0, 0)');
+
+            uic.fillStyle = grd;
+            uic.fillRect(0, 0, width, height);
+
+            window.requestAnimationFrame(draw);
+
+            /*
+            //draw the UI
+            uic.clearRect(0, 0, width, height);
+            uic.fillStyle = "rgba(255, 0, 0, 0.9)";
+            var space = 50;
+            var m = width - 200 - space;
+            var n = height - 50 - space;
+            var health = 5;
+            for (var i = 0; i < PLAYER_LIST.length; i++) {
+                if (PLAYER_LIST[i].id == id) {
+                    health = PLAYER_LIST[i].health;
+                }
+            }
+            uic.fillRect(m, n, health * 2, 50);
+
+            uic.fillStyle = 'black';
+            //uic.fillText(ROOM.numPlayers, 30, 30);
+            */
+        }
+
+        socket.on('map', function(data) {
+            cells = [];
+            for (var i = 0; i < data.length; i++) {
+                var chunk = data[i];
+                for (var j = 0; j < chunk.length; j++) {
+                    var cell = new Cell(chunk[j].x, chunk[j].y, chunk[j].w, chunk[j].wall, chunk[j].color);
+                    cells.push(cell);
+                }
+            }
+        });
+
+        //UPDATE GAME INFORMATION
+        socket.on('updatePlayers', function(data) {
+            //empty the player list
+            PLAYER_LIST = [];
+
+            //fill the list with the new players
+            for (var i = 0; i < data.length; i++) {
+                var player = Player.create();
+                player.id = data[i].id;
+                player.x = data[i].x;
+                player.y = data[i].y;
+                player.color = data[i].color;
+                player.health = data[i].health;
+                player.radius = data[i].radius;
+                PLAYER_LIST.push(player);
+            }
+
+            //check if the player is off the screen
+
+        });
+
+        socket.on('updateRooms', function(data) {
+            ROOM = {};
+            ROOM = Room.create();
+            ROOM.color = data.color;
+            ROOM.numPlayers = data.numPlayers;
+        });
+
+        socket.on('tiles', function(data) {
+            GRID = [];
+            for (var x = 0; x < data.length; x++) {
+                var tile = Tile.create(data[x].i, data[x].j, data[x].w, data[x].id);
+
+                GRID.push(tile);
+            }
+        });
+
+        //LISTEN FOR PLAYER INPUT
+        window.addEventListener('keydown', function(event) {
+            if (event.keyCode === 68) //d
+                socket.emit('keypress', {
+                    inputId: 'right',
+                    state: true
+                });
+            if (event.keyCode === 83) //s
+                socket.emit('keypress', {
+                    inputId: 'down',
+                    state: true
+                });
+            if (event.keyCode === 65) //a
+                socket.emit('keypress', {
+                    inputId: 'left',
+                    state: true
+                });
+            if (event.keyCode === 87) //w
+                socket.emit('keypress', {
+                    inputId: 'up',
+                    state: true
+                });
+            if (event.keyCode === 74) //j
+                socket.emit('join', 1);
+        });
+
+        window.addEventListener('keyup', function(event) {
+            if (event.keyCode === 68) //d
+                socket.emit('keypress', {
+                    inputId: 'right',
+                    state: false
+                });
+            if (event.keyCode === 83) //s
+                socket.emit('keypress', {
+                    inputId: 'down',
+                    state: false
+                });
+            if (event.keyCode === 65) //a
+                socket.emit('keypress', {
+                    inputId: 'left',
+                    state: false
+                });
+            if (event.keyCode === 87) //w
+                socket.emit('keypress', {
+                    inputId: 'up',
+                    state: false
+                });
+        });
+
+        //call the initial draw method to start rendering the game
+        draw();
+
+    </script>
+</body>
+
+</html>
