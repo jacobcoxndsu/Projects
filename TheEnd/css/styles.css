@@ -1,0 +1,47 @@
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+canvas {
+    position: absolute;
+    display: block;
+}
+
+#menuDiv {
+    display:none;
+    position: fixed;
+    width: 75%;
+    height: 75%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: bisque;
+     z-index: 100;
+    
+    border-style: solid;
+    border-color: white;
+}
+
+.menuItem {
+    position: fixed;
+    background-color: blue;
+    border-radius: 10%;
+    border-width: 3px;
+    border-style: solid;
+    border-color: white;
+    top: 50%;
+    left: 50%;
+    height: 200px;
+    width: 200px;
+    margin: 5px;
+}
+
+#start {
+    transform: translate(-50%, -80%);
+}
+
+#options{
+
+}
