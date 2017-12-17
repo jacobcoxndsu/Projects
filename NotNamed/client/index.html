@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0px;
+        }
+        
+        canvas {
+            position: absolute;
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        var socket = io();
+
+        //CANVAS VARIABLES
+        var canvas = document.getElementById('canvas');
+        var c = canvas.getContext('2d');
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    </script>
+</body>
+
+</html>
