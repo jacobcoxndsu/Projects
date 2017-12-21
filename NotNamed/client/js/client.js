@@ -22,11 +22,19 @@
  // 	window.requestAnimationFrame(draw);
  // }
 
- socket.on('update', function (data) {
+ socket.on('update', function (data, map) {
  	c.clearRect(0, 0, width, height);
+ 	for (var i = 0; i < map.length; i++) {
+ 		var block = map[i];
+ 		c.fillStyle = block.color;
+ 		c.fillRect(block.x, block.y, block.size, block.size);
+ 	}
+
  	for (var i = 0; i < data.length; i++) {
  		c.fillStyle = "black";
- 		c.fillRect(data[i].x, data[i].y, 15, 15);
+ 		c.beginPath();
+ 		c.arc(data[i].x, data[i].y, 30, 0, 2 * Math.PI);
+ 		c.fill();
  	}
  });
 

@@ -5,7 +5,8 @@ var Entity = function () {
 		y: 250,
 		spdX: 5,
 		spdY: 5,
-		id: ""
+		id: "",
+		displayDistance: 500
 	};
 
 	self.update = function () {

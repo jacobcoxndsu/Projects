@@ -1,4 +1,5 @@
-var Player = require("./Player");
+var Player = require('./Player');
+var Map = require('./Map');
 
 var express = require('express');
 var app = express();
@@ -13,6 +14,8 @@ app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen(gameport);
 console.log('server started');
+
+Map.create();
 
 var SOCKET_LIST = {};
 
@@ -36,8 +39,9 @@ setInterval(function () {
 	Player.update();
 	for (var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
-		var pack = Player.getInfo(socket);
-		socket.emit('update', pack);
+		var mapPack = Map.getInfo(socket);
+		var playerPack = Player.getInfo(socket);
+		socket.emit('update', playerPack, mapPack);
 	}
 }, 1000 / 25);
 

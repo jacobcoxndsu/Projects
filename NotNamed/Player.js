@@ -69,7 +69,7 @@ Player.getInfo = function (socket) {
 	for (var i in Player.list) {
 		var p = Player.list[i];
 		if (p.id != player.id) {
-			if (player.getDistance(p) < 300.0) {
+			if (player.getDistance(p) < 500.0) {
 				pack.push({
 					x: p.x,
 					y: p.y,
@@ -92,18 +92,19 @@ Player.onConnect = function (socket) {
 	var player = Player(socket.id);
 
 	socket.on('keyPress', function (data) {
-		if (data.inputId === 'left')
+		if (data.inputId === 'left') {
 			player.pressingLeft = data.state;
-		else if (data.inputId === 'right')
+			//player.pressingRight = false;
+		} else if (data.inputId === 'right') {
+			//player.pressingLeft = false;
 			player.pressingRight = data.state;
-		else if (data.inputId === 'up')
+		} else if (data.inputId === 'up') {
+			//player.pressingDown = false;
 			player.pressingUp = data.state;
-		else if (data.inputId === 'down')
+		} else if (data.inputId === 'down') {
 			player.pressingDown = data.state;
-		else if (data.inputId === 'attack')
-			player.pressingAttack = data.state;
-		else if (data.inputId === 'mouseAngle')
-			player.mouseAngle = data.state;
+			//player.pressingUp = false;
+		}
 	});
 }
 
