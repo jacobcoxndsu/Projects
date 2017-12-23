@@ -5,7 +5,7 @@ var Map = function () {
 	var self = {
 		width: 500,
 		height: 500,
-		blockSize: 16,
+		blockSize: 32,
 		id: 0
 	}
 

@@ -3,8 +3,8 @@ var Entity = function () {
 	var self = {
 		x: 250,
 		y: 250,
-		spdX: 5,
-		spdY: 5,
+		spdX: 10,
+		spdY: 10,
 		id: "",
 		displayDistance: 500
 	};

@@ -8,6 +8,11 @@
 
  window.addEventListener('resize', resize, false);
 
+ var img = new Image();
+ img.src = 'client/res/Stone_Tile.png';
+ var img2 = new Image();
+ img2.src = 'client/res/Stone_Blue_Tile.png';
+
  //window.onload = function () {
  // 	draw();
  // }
@@ -26,8 +31,14 @@
  	c.clearRect(0, 0, width, height);
  	for (var i = 0; i < map.length; i++) {
  		var block = map[i];
- 		c.fillStyle = block.color;
- 		c.fillRect(block.x, block.y, block.size, block.size);
+ 		if (block.ore > 95) {
+ 			c.drawImage(img2, block.x, block.y);
+ 		} else {
+ 			c.drawImage(img, block.x, block.y);
+ 		}
+
+ 		//c.fillStyle = block.color;
+ 		//c.fillRect(block.x, block.y, block.size, block.size);
  	}
 
  	for (var i = 0; i < data.length; i++) {
@@ -35,6 +46,8 @@
  		c.beginPath();
  		c.arc(data[i].x, data[i].y, 30, 0, 2 * Math.PI);
  		c.fill();
+
+ 		c.fillRect(0, 0, 64, 64);
  	}
  });
 
