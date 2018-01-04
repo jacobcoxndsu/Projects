@@ -4,6 +4,7 @@ var Blocks = function (x, y, id, size) {
 		x: x,
 		y: y,
 		id: id,
+		wall: false,
 		size: size,
 		color: 'hsl(' + 360 * Math.random() + ', 50%, 50%)',
 		ore: Math.random() * 100

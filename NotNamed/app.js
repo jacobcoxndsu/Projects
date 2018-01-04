@@ -1,3 +1,12 @@
+console.log("second");
+
+var Map = require('./Map');
+Map.create();
+var map = Map.getMap();
+console.log(map.length);
+
+
+/*
 var Player = require('./Player');
 var Map = require('./Map');
 
@@ -48,3 +57,19 @@ setInterval(function () {
 function ID() {
 	return Math.random().toString(20).substr(2, 11);
 }
+
+
+Array.matrix = function (rows, cols, init) {
+	var arr = [];
+	for (var i = 0; i < rows; ++i) {
+		var columns = [];
+		for (var j = 0; j < cols; ++j) {
+			columns[j] = init;
+		}
+		arr[i] = columns;
+	}
+
+	return arr;
+}
+
+*/

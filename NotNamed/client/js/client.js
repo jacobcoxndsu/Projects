@@ -9,9 +9,9 @@
  window.addEventListener('resize', resize, false);
 
  var img = new Image();
- img.src = 'client/res/Stone_Tile.png';
+ img.src = 'client/res/Stone_Tile2.png';
  var img2 = new Image();
- img2.src = 'client/res/Stone_Blue_Tile.png';
+ img2.src = 'client/res/Stone_Blue_Tile2.png';
 
  //window.onload = function () {
  // 	draw();
@@ -47,7 +47,7 @@
  		c.arc(data[i].x, data[i].y, 30, 0, 2 * Math.PI);
  		c.fill();
 
- 		c.fillRect(0, 0, 64, 64);
+ 		//c.fillRect(0, 0, 64, 64);
  	}
  });
 
