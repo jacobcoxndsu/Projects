@@ -1,15 +1,16 @@
 const Tile = require('./Tile');
 const Util = require('./Util');
+const Player = require('./Player');
 var Log = require("./Log");
 
 //ALL CAPS is used to denote the class variables or constants, this is a static class... ;)
 var MAP = [];
-var MAP_SIZE = 200;
+var MAP_SIZE = 400;
 var TILE_SIZE = 64;
 var CHANCE_TO_STAY_ALIVE = 0.45;
 var BIRTH_LIMIT = 4;
 var DEATH_LIMIT = 2;
-var NUMBER_OF_STEPS = 4;
+var NUMBER_OF_STEPS = 3;
 
 module.exports = class Map {
 	static create(chance, birth, death) {
@@ -107,6 +108,28 @@ module.exports = class Map {
 		}
 
 		return count;
+	}
+
+	static getInfo(socket) {
+		var player = Player.getPlayer(socket.id);
+		var pack = Map.getTiles(player, TILE_SIZE * 50);
+		return pack;
+	}
+
+	static getTiles(player, radius) {
+		var pack = [];
+
+		var x = player.x;
+		var y = player.y;
+
+		for (var i = 0; i < MAP.length; i++) {
+			var tile = MAP[i];
+			var distance = Math.pow(x - tile.x, 2) + Math.pow(y - tile.y, 2);
+			if (distance < Math.pow(radius, 2)) {
+				pack.push(tile.getData());
+			}
+		}
+		return pack;
 	}
 
 	static getMap() {

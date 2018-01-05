@@ -13,7 +13,8 @@ module.exports = class Tile {
 			x: this.x,
 			y: this.y,
 			size: this.size,
-			color: this.color
+			color: this.color,
+			wall: this.wall
 		}
 
 		return pack;

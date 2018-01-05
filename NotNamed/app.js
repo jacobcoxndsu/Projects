@@ -1,14 +1,7 @@
-console.log("second");
-
-var Map = require('./Map');
-Map.create();
-var map = Map.getMap();
-console.log(map.length);
-
-
-/*
+const Map = require('./Map');
+var Util = require('./Util');
 var Player = require('./Player');
-var Map = require('./Map');
+var Log = require('./Log');
 
 var express = require('express');
 var app = express();
@@ -22,7 +15,8 @@ app.get('/', function (req, res) {
 app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen(gameport);
-console.log('server started');
+//console.log('server started');
+Log("app", "Server Started", "info", true);
 
 Map.create();
 
@@ -30,8 +24,10 @@ var SOCKET_LIST = {};
 
 var io = require('socket.io')(serv, {});
 io.sockets.on('connection', function (socket) {
-	socket.id = ID();
+	socket.id = Util.getRandomId();
 	SOCKET_LIST[socket.id] = socket;
+
+	socket.emit('connected', socket.id);
 
 	Player.onConnect(socket);
 
@@ -53,23 +49,3 @@ setInterval(function () {
 		socket.emit('update', playerPack, mapPack);
 	}
 }, 1000 / 25);
-
-function ID() {
-	return Math.random().toString(20).substr(2, 11);
-}
-
-
-Array.matrix = function (rows, cols, init) {
-	var arr = [];
-	for (var i = 0; i < rows; ++i) {
-		var columns = [];
-		for (var j = 0; j < cols; ++j) {
-			columns[j] = init;
-		}
-		arr[i] = columns;
-	}
-
-	return arr;
-}
-
-*/

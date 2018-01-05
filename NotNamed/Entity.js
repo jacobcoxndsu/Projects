@@ -1,27 +1,21 @@
-var Entity = function () {
-	"use strict";
-	var self = {
-		x: 250,
-		y: 250,
-		spdX: 10,
-		spdY: 10,
-		id: "",
-		displayDistance: 500
-	};
+module.exports = class Entity {
+	constructor(id, x, y, spdX, spdY) {
+		this.x = x || 250;
+		this.y = y || 250;
+		this.spdX = spdX || 25;
+		this.spdY = spdY || 25;
+		this.id = id || 0;
+	}
 
-	self.update = function () {
-		//self.updatePosition();
-	};
+	update() {
+		this.updatePosition();
+	}
 
-	self.updatePosition = function () {
+	updatePosition() {
 
-	};
+	}
 
-	self.getDistance = function (pt) {
-		return Math.sqrt(Math.pow(self.x - pt.x, 2) + Math.pow(self.y - pt.y, 2));
-	};
-
-	return self;
-};
-
-module.exports = Entity;
+	getDistance(pt) {
+		return Math.sqrt(Math.pow(this.x - pt.x, 2) + Math.pow(this.y - pt.y, 2));
+	}
+}

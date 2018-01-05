@@ -6,12 +6,9 @@
  width = canvas.width = window.innerWidth;
  height = canvas.height = window.innerHeight;
 
- window.addEventListener('resize', resize, false);
+ var ID;
 
- var img = new Image();
- img.src = 'client/res/Stone_Tile2.png';
- var img2 = new Image();
- img2.src = 'client/res/Stone_Blue_Tile2.png';
+ window.addEventListener('resize', resize, false);
 
  //window.onload = function () {
  // 	draw();
@@ -27,18 +24,37 @@
  // 	window.requestAnimationFrame(draw);
  // }
 
+ socket.on('connected', function (data) {
+ 	ID = data;
+ });
+
  socket.on('update', function (data, map) {
+ 	c.resetTransform();
  	c.clearRect(0, 0, width, height);
+
+ 	var disX = 0;
+ 	var disY = 0;
+ 	var screenX = Math.floor(canvas.width / 2);
+ 	var screenY = Math.floor(canvas.height / 2);
+ 	for (var i = 0; i < data.length; i++) {
+ 		if (data[i].id === ID) {
+ 			disX = (screenX - data[i].x);
+ 			disY = (screenY - data[i].y);
+ 		}
+ 	}
+
+ 	c.translate(disX, disY);
+
  	for (var i = 0; i < map.length; i++) {
- 		var block = map[i];
- 		if (block.ore > 95) {
- 			c.drawImage(img2, block.x, block.y);
+ 		var tile = map[i];
+
+ 		if (tile.wall) {
+ 			c.fillStyle = 'gray';
  		} else {
- 			c.drawImage(img, block.x, block.y);
+ 			c.fillStyle = tile.color;
  		}
 
- 		//c.fillStyle = block.color;
- 		//c.fillRect(block.x, block.y, block.size, block.size);
+ 		c.fillRect(tile.x, tile.y, tile.size, tile.size);
  	}
 
  	for (var i = 0; i < data.length; i++) {
