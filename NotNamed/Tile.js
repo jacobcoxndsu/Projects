@@ -4,8 +4,9 @@ module.exports = class Tile {
 		this.y = y;
 		this.id = id;
 		this.wall = w || false;
-		this.size = size || 64;
+		this.size = size || 256;
 		this.color = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+		this.walking = false;
 	}
 
 	getData() {
@@ -14,7 +15,8 @@ module.exports = class Tile {
 			y: this.y,
 			size: this.size,
 			color: this.color,
-			wall: this.wall
+			wall: this.wall,
+			walking: this.walking
 		}
 
 		return pack;

@@ -1,9 +1,9 @@
-const Map = require('./Map');
-var Util = require('./Util');
-var Player = require('./Player');
-var Log = require('./Log');
-
+const Map = require('./Map.js');
+const Player = require('./Player.js');
+var Util = require('./Util.js');
+var Log = require('./Log.js');
 var express = require('express');
+
 var app = express();
 var serv = require('http').Server(app);
 var gameport = 2000;
@@ -14,11 +14,11 @@ app.get('/', function (req, res) {
 //If the server specifies something specific but it has to be in the client folder.
 app.use('/client', express.static(__dirname + '/client'));
 
+Map.create();
+
 serv.listen(gameport);
 //console.log('server started');
 Log("app", "Server Started", "info", true);
-
-Map.create();
 
 var SOCKET_LIST = {};
 
@@ -44,7 +44,7 @@ setInterval(function () {
 	Player.update();
 	for (var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
-		var mapPack = Map.getInfo(socket);
+		var mapPack = Player.getMapInfo(socket);
 		var playerPack = Player.getInfo(socket);
 		socket.emit('update', playerPack, mapPack);
 	}

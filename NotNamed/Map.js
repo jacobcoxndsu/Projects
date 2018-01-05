@@ -1,12 +1,11 @@
-const Tile = require('./Tile');
-const Util = require('./Util');
-const Player = require('./Player');
-var Log = require("./Log");
+const Tile = require('./Tile.js');
+const Util = require('./Util.js');
+var Log = require("./Log.js");
 
 //ALL CAPS is used to denote the class variables or constants, this is a static class... ;)
 var MAP = [];
-var MAP_SIZE = 400;
-var TILE_SIZE = 64;
+var MAP_SIZE = 250;
+var TILE_SIZE = 256;
 var CHANCE_TO_STAY_ALIVE = 0.45;
 var BIRTH_LIMIT = 4;
 var DEATH_LIMIT = 2;
@@ -110,9 +109,58 @@ module.exports = class Map {
 		return count;
 	}
 
-	static getInfo(socket) {
-		var player = Player.getPlayer(socket.id);
-		var pack = Map.getTiles(player, TILE_SIZE * 50);
+	static getTile(x, y) {
+		var tileX = Math.floor(x / TILE_SIZE);
+		var tileY = Math.floor(y / TILE_SIZE);
+
+		return MAP[tileX * MAP_SIZE + tileY];
+	}
+
+	//Top Right Bottom Left
+	static getNeightbors(x, y) {
+		var neighbors = [];
+
+		var top = Map.getTileAbove(x, y);
+		neighbors.push(top);
+
+		var right = Map.getTileRight(x, y);
+		neighbors.push(right);
+
+		var bottom = Map.getTileBelow(x, y);
+		neighbors.push(bottom);
+
+		var left = Map.getTileLeft(x, y);
+		neighbors.push(left);
+
+		return neighbors;
+	}
+
+	static getTileAbove(x, y) {
+		var tileX = Math.floor(x / TILE_SIZE);
+		var tileY = Math.floor(y / TILE_SIZE - 1);
+		return MAP[tileX * MAP_SIZE + tileY];
+	}
+
+	static getTileBelow(x, y) {
+		var tileX = Math.floor(x / TILE_SIZE);
+		var tileY = Math.floor(y / TILE_SIZE + 1);
+		return MAP[tileX * MAP_SIZE + tileY];
+	}
+
+	static getTileLeft(x, y) {
+		var tileX = Math.floor(x / TILE_SIZE - 1);
+		var tileY = Math.floor(y / TILE_SIZE);
+		return MAP[tileX * MAP_SIZE + tileY];
+	}
+
+	static getTileRight(x, y) {
+		var tileX = Math.floor(x / TILE_SIZE + 1);
+		var tileY = Math.floor(y / TILE_SIZE);
+		return MAP[tileX * MAP_SIZE + tileY];
+	}
+
+	static getInfo(player) {
+		var pack = Map.getTiles(player, TILE_SIZE * 10);
 		return pack;
 	}
 
@@ -134,9 +182,14 @@ module.exports = class Map {
 
 	static getMap() {
 		return MAP;
+
 	}
 
 	static getMapSize() {
 		return MAP_SIZE;
+	}
+
+	static getTileSize() {
+		return TILE_SIZE;
 	}
 }

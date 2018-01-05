@@ -1,5 +1,7 @@
  var socket = io();
 
+ var count = 0;
+
  //CANVAS VARIABLES
  var canvas = document.getElementById('canvas');
  var c = canvas.getContext('2d');
@@ -53,15 +55,30 @@
  		} else {
  			c.fillStyle = tile.color;
  		}
+ 		if (tile.walking) {
+ 			c.fillStyle = 'orange';
+ 		}
 
  		c.fillRect(tile.x, tile.y, tile.size, tile.size);
+ 		c.strokeStyle = "black";
+ 		c.lineWidth = 3;
+ 		c.strokeRect(tile.x, tile.y, tile.size, tile.size);
+
+
+ 		/*c.lineWidth = 10;
+ 		c.strokeStyle = '#09F';
+ 		c.beginPath();
+ 		c.moveTo(tile.x, tile.y);
+ 		c.lineTo(tile.x + tile.size, tile.y);
+ 		c.stroke();*/
  	}
 
  	for (var i = 0; i < data.length; i++) {
  		c.fillStyle = "black";
- 		c.beginPath();
- 		c.arc(data[i].x, data[i].y, 30, 0, 2 * Math.PI);
- 		c.fill();
+ 		//c.beginPath();
+ 		c.fillRect(data[i].x, data[i].y, data[i].size, data[i].size);
+ 		//c.arc(data[i].x, data[i].y, 30, 0, 2 * Math.PI);
+ 		//c.fill();
 
  		//c.fillRect(0, 0, 64, 64);
  	}
