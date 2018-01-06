@@ -18,7 +18,7 @@ function toggleSong() {
 }
 
 function preload() {
-    song = loadSound('Sounds/01 Rubik.mp3');
+    song = loadSound('Sounds/Dance.mp3');
     mic = new p5.AudioIn();
     mic.connect(mic);
     mic.connect();

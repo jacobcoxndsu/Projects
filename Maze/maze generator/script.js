@@ -3,8 +3,8 @@ var context = canvas.getContext('2d');
 var width = canvas.width = window.innerWidth;
 var height = canvas.height = window.innerHeight;
 
-var rows = 27;
-var cols = 27;
+var rows = 25;
+var cols = 25;
 var chunkSize = 5; // greater than or equal to 3
 var cellSize = 5; //this is in pixels
 
