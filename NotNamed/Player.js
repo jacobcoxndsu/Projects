@@ -11,75 +11,105 @@ module.exports = class Player extends Entity {
 		this.pressingLeft = false;
 		this.pressingUp = false;
 		this.pressingDown = false;
+		this.pressingSpace = false;
 		this.map = null;
 
 		PLAYER_LIST[id] = this;
+
+		console.log(PLAYER_LIST);
 		Log("Player", "Player Created with id: " + id, "info");
 	}
 
 	updatePosition() {
-		var map = Map.getMap();
-		for (var i = 0; i < map.length; i++) {
-			map[i].walking = false;
-		}
+		var centerX = this.x + (this.size / 2);
+		var centerY = this.y + (this.size / 2);
 
-		var top = Map.getTileAbove(this.x, this.y);
-		var bottom = Map.getTileBelow(this.x, this.y);
-		var left = Map.getTileLeft(this.x, this.y);
-		var right = Map.getTileRight(this.x, this.y);
+		var top = Map.getTileAbove(centerX, centerY);
+		var bottom = Map.getTileBelow(centerX, centerY);
+		var left = Map.getTileLeft(centerX, centerY);
+		var right = Map.getTileRight(centerX, centerY);
 
-		var tile = Map.getTile(this.x, this.y);
-		tile.walking = true;
-
+		var tile = Map.getTile(centerY, centerY);
 
 		if (this.pressingUp) {
 			if (top) {
-				top.walking = true;
-				for (var i = 0; i < this.spdY; i++) {
-					if (!Player.collision(tile)) {
+				if (!top.wall) {
+					for (var i = 0; i < this.spdY; i++) {
 						this.y -= 1;
-
 					}
+				} else {
+					for (var i = 0; i < this.spdY; i++) {
+						if (!Player.getCollisionTop(top, this)) {
+							this.y -= 1;
+						}
+					}
+				}
+
+				if (this.pressingSpace) {
+					top.wall = false;
 				}
 			}
 		}
 
 		if (this.pressingDown) {
 			if (bottom) {
-				bottom.walking = true;
-				for (var i = 0; i < this.spdY; i++) {
-					if (!Player.collision(tile)) {
+				if (!bottom.wall) {
+					for (var i = 0; i < this.spdY; i++) {
 						this.y += 1;
-
 					}
+				} else {
+					for (var i = 0; i < this.spdY; i++) {
+						if (!Player.getCollisionBottom(bottom, this)) {
+							this.y += 1;
+						}
+					}
+				}
+
+				if (this.pressingSpace) {
+					bottom.wall = false;
 				}
 			}
 		}
 
 		if (this.pressingLeft) {
 			if (left) {
-				left.walking = true;
-				for (var i = 0; i < this.spdX; i++) {
-					if (!Player.collision(tile)) {
+				if (!left.wall) {
+					for (var i = 0; i < this.spdX; i++) {
 						this.x -= 1;
-
 					}
+				} else {
+					for (var i = 0; i < this.spdX; i++) {
+						if (!Player.getCollisionLeft(left, this)) {
+							this.x -= 1;
+						}
+					}
+				}
+
+				if (this.pressingSpace) {
+					left.wall = false;
 				}
 			}
 		}
 
 		if (this.pressingRight) {
 			if (right) {
-				right.walking = true;
-				for (var i = 0; i < this.spdX; i++) {
-					if (!Player.collision(tile)) {
+				if (!right.wall) {
+					for (var i = 0; i < this.spdX; i++) {
 						this.x += 1;
-
 					}
+				} else {
+					for (var i = 0; i < this.spdX; i++) {
+						if (!Player.getCollisionRight(right, this)) {
+							this.x += 1;
+						}
+					}
+				}
+
+				if (this.pressingSpace) {
+					right.wall = false;
 				}
 			}
 		}
-
 	}
 
 	getData() {
@@ -99,16 +129,32 @@ module.exports = class Player extends Entity {
 		return pack;
 	}
 
-	static collision(tile) {
-		//var deltaX = this.x - Math.max(tile.x, Math.min(this.x, tile.x + tile.size));
-		//var deltaY = this.y - Math.max(tile.y, Math.min(this.y, tile.y + tile.size));
-		if (tile.wall) {
-			if (tile.x < this.x + this.size && tile.x + tile.size > this.x && tile.y < this.y + this.size && tile.size + tile.y > this.y) {
-				return true;
-			}
-		}
+	static getCollisionTop(rec1, rec2) {
+		var y1 = rec1.y + rec1.size;
+		var y2 = rec2.y;
 
-		//return false;
+		return !(Math.abs(y1 - y2) > 1);
+	}
+
+	static getCollisionBottom(rec1, rec2) {
+		var y1 = rec1.y;
+		var y2 = rec2.y + rec2.size;
+
+		return !(Math.abs(y1 - y2) > 1);
+	}
+
+	static getCollisionRight(rec1, rec2) {
+		var x1 = rec1.x;
+		var x2 = rec2.x + rec2.size;
+
+		return !(Math.abs(x1 - x2) > 1);
+	}
+
+	static getCollisionLeft(rec1, rec2) {
+		var x1 = rec1.x + rec1.size;
+		var x2 = rec2.x;
+
+		return !(Math.abs(x1 - x2) > 1);
 	}
 
 	static onConnect(socket) {
@@ -135,6 +181,8 @@ module.exports = class Player extends Entity {
 				//player.pressingLeft = false;
 				//player.pressingRight = false;
 				//player.pressingUp = false;
+			} else if (data.inputId === 'space') {
+				player.pressingSpace = data.state;
 			}
 		});
 	}
@@ -167,8 +215,8 @@ module.exports = class Player extends Entity {
 		for (var i in PLAYER_LIST) {
 			var p = PLAYER_LIST[i];
 			if (p.id != player.id) {
-				if (player.getDistance(p) < 1000.0) {
-					pack.push(player.getData());
+				if (player.getDistance(p) < 2000.0) {
+					pack.push(p.getData());
 				}
 			}
 		}

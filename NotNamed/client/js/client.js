@@ -74,13 +74,13 @@
  	}
 
  	for (var i = 0; i < data.length; i++) {
+ 		if (count < data.length) {
+ 			console.log(data[0]);
+ 			console.log(data[1]);
+ 			count++;
+ 		}
  		c.fillStyle = "black";
- 		//c.beginPath();
  		c.fillRect(data[i].x, data[i].y, data[i].size, data[i].size);
- 		//c.arc(data[i].x, data[i].y, 30, 0, 2 * Math.PI);
- 		//c.fill();
-
- 		//c.fillRect(0, 0, 64, 64);
  	}
  });
 
@@ -105,6 +105,11 @@
  			inputId: 'up',
  			state: true
  		});
+ 	else if (event.keyCode === 32) // space
+ 		socket.emit('keyPress', {
+ 			inputId: 'space',
+ 			state: true
+ 		});
 
  }
  document.onkeyup = function (event) {
@@ -126,6 +131,11 @@
  	else if (event.keyCode === 87) // w
  		socket.emit('keyPress', {
  			inputId: 'up',
+ 			state: false
+ 		});
+ 	else if (event.keyCode === 32) // space
+ 		socket.emit('keyPress', {
+ 			inputId: 'space',
  			state: false
  		});
  }
