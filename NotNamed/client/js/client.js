@@ -62,7 +62,7 @@
  		c.fillRect(tile.x, tile.y, tile.size, tile.size);
  		c.strokeStyle = "black";
  		c.lineWidth = 3;
- 		c.strokeRect(tile.x, tile.y, tile.size, tile.size);
+ 		//c.strokeRect(tile.x, tile.y, tile.size, tile.size);
 
 
  		/*c.lineWidth = 10;

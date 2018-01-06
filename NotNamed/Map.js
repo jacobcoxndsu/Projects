@@ -135,6 +135,15 @@ module.exports = class Map {
 		return neighbors;
 	}
 
+	static getAllTiles(x, y) {
+		var tiles = [];
+		tiles[0] = Map.getTileAbove(x, y);
+		tiles[1] = Map.getTileBelow(x, y);
+		tiles[2] = Map.getTileLeft(x, y);
+		tiles[3] = Map.getTileRight(x, y);
+		return tiles;
+	}
+
 	static getTileAbove(x, y) {
 		var tileX = Math.floor(x / TILE_SIZE);
 		var tileY = Math.floor(y / TILE_SIZE - 1);
