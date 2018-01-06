@@ -14,7 +14,7 @@ window.onload = function(){
 
 function setupWebAudio(){
     var audio = document.createElement('audio');
-    audio.src = 'Sounds/01 Sweet Lovin.mp3';
+    audio.src = 'Sounds/03 Holiday _ Boulevard of Broken Dreams.mp3';
     audio.controls = 'true';
     document.body.appendChild(audio);
     audio.style.width = window.innerWidth + 'px';

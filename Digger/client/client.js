@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io.connect('http://localhost:3001');;
 
 window.onload = function () {
     //var socket = io();
