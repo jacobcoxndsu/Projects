@@ -5,200 +5,200 @@ var Log = require("./Log.js");
 //ALL CAPS is used to denote the class variables or constants, this is a static class... ;)
 var MAP = [];
 var MAP_SIZE = 250;
-var TILE_SIZE = 256;
+var TILE_SIZE = 128;
 var CHANCE_TO_STAY_ALIVE = 0.45;
 var BIRTH_LIMIT = 4;
 var DEATH_LIMIT = 2;
 var NUMBER_OF_STEPS = 3;
 
 module.exports = class Map {
-	static create(chance, birth, death) {
-		Map.initialize();
-		for (var i = 0; i < NUMBER_OF_STEPS; i++) {
-			Map.step(i);
-		}
-		Map.fillWalls();
-		Log("Map", "Map creation Complete", "finish");
-	}
+    static create(chance, birth, death) {
+        Map.initialize();
+        for (var i = 0; i < NUMBER_OF_STEPS; i++) {
+            Map.step(i);
+        }
+        Map.fillWalls();
+        Log("Map", "Map creation Complete", "finish");
+    }
 
-	static initialize() {
-		for (var x = 0; x < MAP_SIZE; x++) {
-			for (var y = 0; y < MAP_SIZE; y++) {
-				var id = Util.getRandomId();
-				var value = false;
+    static initialize() {
+        for (var x = 0; x < MAP_SIZE; x++) {
+            for (var y = 0; y < MAP_SIZE; y++) {
+                var id = Util.getRandomId();
+                var value = false;
 
-				if (Math.random() < CHANCE_TO_STAY_ALIVE) {
-					value = true;
-				}
+                if (Math.random() < CHANCE_TO_STAY_ALIVE) {
+                    value = true;
+                }
 
-				var tile = new Tile(x * TILE_SIZE, y * TILE_SIZE, id, value, TILE_SIZE);
-				MAP[x * MAP_SIZE + y] = tile;
-			}
-		}
-		Log("Map", "Initialization Complete", "finish");
-	}
+                var tile = new Tile(x * TILE_SIZE, y * TILE_SIZE, id, value, TILE_SIZE);
+                MAP[x * MAP_SIZE + y] = tile;
+            }
+        }
+        Log("Map", "Initialization Complete", "finish");
+    }
 
-	static step(num) {
-		//Create a new temp map
-		var newMap = [];
-		for (var x = 0; x < MAP_SIZE; x++) {
-			for (var y = 0; y < MAP_SIZE; y++) {
-				var id = MAP[x * MAP_SIZE + y].id;
-				var tile = new Tile(x * TILE_SIZE, y * TILE_SIZE, id, false, TILE_SIZE);
-				newMap[x * MAP_SIZE + y] = tile;
-			}
-		}
+    static step(num) {
+        //Create a new temp map
+        var newMap = [];
+        for (var x = 0; x < MAP_SIZE; x++) {
+            for (var y = 0; y < MAP_SIZE; y++) {
+                var id = MAP[x * MAP_SIZE + y].id;
+                var tile = new Tile(x * TILE_SIZE, y * TILE_SIZE, id, false, TILE_SIZE);
+                newMap[x * MAP_SIZE + y] = tile;
+            }
+        }
 
-		//now edit newMap based on the MAP object
-		for (var x = 0; x < MAP_SIZE; x++) {
-			for (var y = 0; y < MAP_SIZE; y++) {
-				var nbs = Map.countAliveNeighbors(x, y);
+        //now edit newMap based on the MAP object
+        for (var x = 0; x < MAP_SIZE; x++) {
+            for (var y = 0; y < MAP_SIZE; y++) {
+                var nbs = Map.countAliveNeighbors(x, y);
 
-				if (MAP[x * MAP_SIZE + y].wall === true) {
-					if (nbs < DEATH_LIMIT) {
-						newMap[x * MAP_SIZE + y].wall = false;
-					} else {
-						newMap[x * MAP_SIZE + y].wall = true;
-					}
-				} else {
-					if (nbs > BIRTH_LIMIT) {
-						newMap[x * MAP_SIZE + y].wall = true;
-					} else {
-						newMap[x * MAP_SIZE + y].wall = false;
-					}
-				}
-			}
-		}
+                if (MAP[x * MAP_SIZE + y].wall === true) {
+                    if (nbs < DEATH_LIMIT) {
+                        newMap[x * MAP_SIZE + y].wall = false;
+                    } else {
+                        newMap[x * MAP_SIZE + y].wall = true;
+                    }
+                } else {
+                    if (nbs > BIRTH_LIMIT) {
+                        newMap[x * MAP_SIZE + y].wall = true;
+                    } else {
+                        newMap[x * MAP_SIZE + y].wall = false;
+                    }
+                }
+            }
+        }
 
-		MAP = newMap;
-		Log("Map", "Step Number " + num, "finish");
-		if (num === NUMBER_OF_STEPS - 1) {
-			Log("Map", "Steps Complete", "finish");
-		}
-	}
+        MAP = newMap;
+        Log("Map", "Step Number " + num, "finish");
+        if (num === NUMBER_OF_STEPS - 1) {
+            Log("Map", "Steps Complete", "finish");
+        }
+    }
 
-	static fillWalls() {
-		for (var i = 0; i < MAP_SIZE; i++) {
-			for (var j = 0; j < MAP_SIZE; j++) {
-				if (i === 0 || j === 0 || i === MAP_SIZE - 1 || j === MAP_SIZE -
-					1) {
-					MAP[i * MAP_SIZE + j].wall = true;
-				}
-			}
-		}
+    static fillWalls() {
+        for (var i = 0; i < MAP_SIZE; i++) {
+            for (var j = 0; j < MAP_SIZE; j++) {
+                if (i === 0 || j === 0 || i === MAP_SIZE - 1 || j === MAP_SIZE -
+                    1) {
+                    MAP[i * MAP_SIZE + j].wall = true;
+                }
+            }
+        }
 
-		Log("Map", "Filled Walls Complete", "finish");
-	}
+        Log("Map", "Filled Walls Complete", "finish");
+    }
 
-	static countAliveNeighbors(x, y) {
-		var count = 0;
-		for (var i = -1; i < 2; i++) {
-			for (var j = -1; j < 2; j++) {
-				var neighbor_x = x + i;
-				var neighbor_y = y + j;
-				if (i === 0 && j === 0) {
-					//Do nothing we are looking at ourself
-				} else if (neighbor_x < 0 || neighbor_y < 0 || neighbor_x >= MAP_SIZE || neighbor_y >= MAP_SIZE) {
-					count = count + 1;
-				} else if (MAP[neighbor_x * MAP_SIZE + neighbor_y].wall === true) {
-					count = count + 1;
-				}
-			}
-		}
+    static countAliveNeighbors(x, y) {
+        var count = 0;
+        for (var i = -1; i < 2; i++) {
+            for (var j = -1; j < 2; j++) {
+                var neighbor_x = x + i;
+                var neighbor_y = y + j;
+                if (i === 0 && j === 0) {
+                    //Do nothing we are looking at ourself
+                } else if (neighbor_x < 0 || neighbor_y < 0 || neighbor_x >= MAP_SIZE || neighbor_y >= MAP_SIZE) {
+                    count = count + 1;
+                } else if (MAP[neighbor_x * MAP_SIZE + neighbor_y].wall === true) {
+                    count = count + 1;
+                }
+            }
+        }
 
-		return count;
-	}
+        return count;
+    }
 
-	static getTile(x, y) {
-		var tileX = Math.floor(x / TILE_SIZE);
-		var tileY = Math.floor(y / TILE_SIZE);
+    static getTile(x, y) {
+        var tileX = Math.floor(x / TILE_SIZE);
+        var tileY = Math.floor(y / TILE_SIZE);
 
-		return MAP[tileX * MAP_SIZE + tileY];
-	}
+        return MAP[tileX * MAP_SIZE + tileY];
+    }
 
-	//Top Right Bottom Left
-	static getNeightbors(x, y) {
-		var neighbors = [];
+    //Top Right Bottom Left
+    static getNeightbors(x, y) {
+        var neighbors = [];
 
-		var top = Map.getTileAbove(x, y);
-		neighbors.push(top);
+        var top = Map.getTileAbove(x, y);
+        neighbors.push(top);
 
-		var right = Map.getTileRight(x, y);
-		neighbors.push(right);
+        var right = Map.getTileRight(x, y);
+        neighbors.push(right);
 
-		var bottom = Map.getTileBelow(x, y);
-		neighbors.push(bottom);
+        var bottom = Map.getTileBelow(x, y);
+        neighbors.push(bottom);
 
-		var left = Map.getTileLeft(x, y);
-		neighbors.push(left);
+        var left = Map.getTileLeft(x, y);
+        neighbors.push(left);
 
-		return neighbors;
-	}
+        return neighbors;
+    }
 
-	static getAllTiles(x, y) {
-		var tiles = [];
-		tiles[0] = Map.getTileAbove(x, y);
-		tiles[1] = Map.getTileBelow(x, y);
-		tiles[2] = Map.getTileLeft(x, y);
-		tiles[3] = Map.getTileRight(x, y);
-		return tiles;
-	}
+    static getAllTiles(x, y) {
+        var tiles = [];
+        tiles[0] = Map.getTileAbove(x, y);
+        tiles[1] = Map.getTileBelow(x, y);
+        tiles[2] = Map.getTileLeft(x, y);
+        tiles[3] = Map.getTileRight(x, y);
+        return tiles;
+    }
 
-	static getTileAbove(x, y) {
-		var tileX = Math.floor(x / TILE_SIZE);
-		var tileY = Math.floor(y / TILE_SIZE - 1);
-		return MAP[tileX * MAP_SIZE + tileY];
-	}
+    static getTileAbove(x, y) {
+        var tileX = Math.floor(x / TILE_SIZE);
+        var tileY = Math.floor(y / TILE_SIZE - 1);
+        return MAP[tileX * MAP_SIZE + tileY];
+    }
 
-	static getTileBelow(x, y) {
-		var tileX = Math.floor(x / TILE_SIZE);
-		var tileY = Math.floor(y / TILE_SIZE + 1);
-		return MAP[tileX * MAP_SIZE + tileY];
-	}
+    static getTileBelow(x, y) {
+        var tileX = Math.floor(x / TILE_SIZE);
+        var tileY = Math.floor(y / TILE_SIZE + 1);
+        return MAP[tileX * MAP_SIZE + tileY];
+    }
 
-	static getTileLeft(x, y) {
-		var tileX = Math.floor(x / TILE_SIZE - 1);
-		var tileY = Math.floor(y / TILE_SIZE);
-		return MAP[tileX * MAP_SIZE + tileY];
-	}
+    static getTileLeft(x, y) {
+        var tileX = Math.floor(x / TILE_SIZE - 1);
+        var tileY = Math.floor(y / TILE_SIZE);
+        return MAP[tileX * MAP_SIZE + tileY];
+    }
 
-	static getTileRight(x, y) {
-		var tileX = Math.floor(x / TILE_SIZE + 1);
-		var tileY = Math.floor(y / TILE_SIZE);
-		return MAP[tileX * MAP_SIZE + tileY];
-	}
+    static getTileRight(x, y) {
+        var tileX = Math.floor(x / TILE_SIZE + 1);
+        var tileY = Math.floor(y / TILE_SIZE);
+        return MAP[tileX * MAP_SIZE + tileY];
+    }
 
-	static getInfo(player) {
-		var pack = Map.getTiles(player, TILE_SIZE * 10);
-		return pack;
-	}
+    static getInfo(player) {
+        var pack = Map.getTiles(player, TILE_SIZE * 10);
+        return pack;
+    }
 
-	static getTiles(player, radius) {
-		var pack = [];
+    static getTiles(player, radius) {
+        var pack = [];
 
-		var x = player.x;
-		var y = player.y;
+        var x = player.x;
+        var y = player.y;
 
-		for (var i = 0; i < MAP.length; i++) {
-			var tile = MAP[i];
-			var distance = Math.pow(x - tile.x, 2) + Math.pow(y - tile.y, 2);
-			if (distance < Math.pow(radius, 2)) {
-				pack.push(tile.getData());
-			}
-		}
-		return pack;
-	}
+        for (var i = 0; i < MAP.length; i++) {
+            var tile = MAP[i];
+            var distance = Math.pow(x - tile.x, 2) + Math.pow(y - tile.y, 2);
+            if (distance < Math.pow(radius, 2)) {
+                pack.push(tile.getData());
+            }
+        }
+        return pack;
+    }
 
-	static getMap() {
-		return MAP;
+    static getMap() {
+        return MAP;
 
-	}
+    }
 
-	static getMapSize() {
-		return MAP_SIZE;
-	}
+    static getMapSize() {
+        return MAP_SIZE;
+    }
 
-	static getTileSize() {
-		return TILE_SIZE;
-	}
+    static getTileSize() {
+        return TILE_SIZE;
+    }
 }
