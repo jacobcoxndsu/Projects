@@ -51,7 +51,13 @@
          var tile = map[i];
 
          if (tile.wall) {
-             c.fillStyle = 'gray';
+             //c.fillStyle = 'gray';
+             if (tile.state < 0 || tile.state > 255) {
+                 tile.state = "0";
+             }
+             var hue = 'rgb(' + (tile.state) + ',' + (tile.state) + ',' + (tile.state) + ')';
+             c.fillStyle = hue;
+
          } else {
              c.fillStyle = tile.color;
          }

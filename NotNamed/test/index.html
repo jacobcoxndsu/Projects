@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <canvas id="canvas"></canvas>
+
+    <script src="Vector2D.js"></script>
+
+    <link rel="shortcut icon" href="">
+
+    <style>
+        html,
+        body {
+            margin: 0px;
+        }
+
+        canvas {
+            position: absolute;
+            display: block;
+        }
+
+    </style>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width = window.innerWidth;
+        var height = canvas.height = window.innerHeight;
+        var vector;
+
+        var lastDirection = "none";
+
+        var speed = 4;
+
+        var maxSpeed = 5;
+        var speedX = 4;
+        var speedY = 4;
+
+        window.addEventListener('resize', resize, false);
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.onload = function() {
+            vector = new Vector2D(200, 200);
+
+            vector.pressingUp = false;
+            vector.pressingDown = false;
+            vector.pressingRight = false;
+            vector.pressingLeft = false;
+
+            draw();
+        }
+
+        var draw = function() {
+
+            ctx.clearRect(0, 0, width, height);
+
+            var newSpeed = 0;
+
+            if ((vector.pressingRight || vector.pressingLeft) && (vector.pressingUp || vector.pressingDown)) {
+                newSpeed = speed * 0.7;
+            } else {
+                newSpeed = speed;
+            }
+
+            if (vector.pressingUp) {
+                vector.sub(0, newSpeed);
+            }
+
+            if (vector.pressingDown) {
+                vector.add(0, newSpeed);
+            }
+
+            if (vector.pressingLeft) {
+                vector.sub(newSpeed, 0);
+            }
+
+            if (vector.pressingRight) {
+                vector.add(newSpeed, 0);
+            }
+
+            ctx.fillRect(vector.x, vector.y, 50, 50);
+            window.requestAnimationFrame(draw);
+
+
+
+            /*ctx.clearRect(0, 0, width, height);
+
+            var newSpeed = 0;
+
+            if (!vector.pressingUp && !vector.pressingDown && !vector.pressingLeft && !vector.pressingRight) {
+                speed = Vector2D.Approach(0, speed, 0.2);
+                newSpeed = speed;
+
+                if (lastDirection === "Up") {
+                    vector.sub(0, newSpeed);
+                }
+
+                if (lastDirection === "Down") {
+                    vector.add(0, newSpeed);
+                }
+
+                if (lastDirection === "Left") {
+                    vector.sub(newSpeed, 0);
+                }
+
+                if (lastDirection === "Right") {
+                    vector.add(newSpeed, 0);
+                }
+            } else {
+
+                if ((vector.pressingRight || vector.pressingLeft) && (vector.pressingUp || vector.pressingDown)) {
+                    speed = Vector2D.Approach(maxSpeed, speed, 0.1);
+                    newSpeed = speed * 0.7;
+                } else {
+                    speed = Vector2D.Approach(maxSpeed, speed, 0.1);
+                    newSpeed = speed;
+                }
+
+                if (vector.pressingUp) {
+                    vector.sub(0, newSpeed);
+                }
+
+                if (vector.pressingDown) {
+                    vector.add(0, newSpeed);
+                }
+
+                if (vector.pressingLeft) {
+                    vector.sub(newSpeed, 0);
+                }
+
+                if (vector.pressingRight) {
+                    vector.add(newSpeed, 0);
+                }
+            }
+
+
+
+            ctx.fillRect(vector.x, vector.y, 50, 50);
+            window.requestAnimationFrame(draw);
+            
+            */
+        }
+
+
+        document.onkeydown = function(event) {
+            if (event.keyCode === 68) {
+                vector.pressingRight = true;
+            } //d
+            else if (event.keyCode === 83) {
+                vector.pressingDown = true;
+            } //s
+            else if (event.keyCode === 65) {
+                vector.pressingLeft = true;
+            } //a
+            else if (event.keyCode === 87) {
+                vector.pressingUp = true;
+            } // w
+            else if (event.keyCode === 32) {
+
+            } // space
+
+
+        }
+        document.onkeyup = function(event) {
+            if (event.keyCode === 68) {
+                vector.pressingRight = false;
+                lastDirection = "Right";
+            } //d
+            else if (event.keyCode === 83) {
+                vector.pressingDown = false;
+                lastDirection = "Down";
+            } //s
+            else if (event.keyCode === 65) {
+                vector.pressingLeft = false;
+                lastDirection = "Left";
+            } //a
+            else if (event.keyCode === 87) {
+                vector.pressingUp = false;
+                lastDirection = "Up";
+            } // w
+            else if (event.keyCode === 32) {
+
+            } // space
+        }
+
+
+        /*
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width = window.innerWidth;
+        var height = canvas.height = window.innerHeight;
+        var vector;
+
+        var speed = 3;
+
+        window.addEventListener('resize', resize, false);
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.onload = function() {
+            vector = new Vector2D(200, 200);
+
+            vector.pressingUp = false;
+            vector.pressingDown = false;
+            vector.pressingRight = false;
+            vector.pressingLeft = false;
+
+            draw();
+        }
+
+        var draw = function() {
+            ctx.clearRect(0, 0, width, height);
+
+            var newSpeed = 0;
+
+            if ((vector.pressingRight || vector.pressingLeft) && (vector.pressingUp || vector.pressingDown)) {
+                newSpeed = speed * 0.7;
+            } else {
+                newSpeed = speed;
+            }
+
+            if (vector.pressingUp) {
+                vector.sub(0, newSpeed);
+            }
+
+            if (vector.pressingDown) {
+                vector.add(0, newSpeed);
+            }
+
+            if (vector.pressingLeft) {
+                vector.sub(newSpeed, 0);
+            }
+
+            if (vector.pressingRight) {
+                vector.add(newSpeed, 0);
+            }
+
+            ctx.fillRect(vector.x, vector.y, 50, 50);
+            window.requestAnimationFrame(draw);
+        }
+
+        document.onkeydown = function(event) {
+            if (event.keyCode === 68) {
+                vector.pressingRight = true;
+            } //d
+            else if (event.keyCode === 83) {
+                vector.pressingDown = true;
+            } //s
+            else if (event.keyCode === 65) {
+                vector.pressingLeft = true;
+            } //a
+            else if (event.keyCode === 87) {
+                vector.pressingUp = true;
+            } // w
+            else if (event.keyCode === 32) {
+
+            } // space
+
+
+        }
+        document.onkeyup = function(event) {
+            if (event.keyCode === 68) {
+                vector.pressingRight = false;
+            } //d
+            else if (event.keyCode === 83) {
+                vector.pressingDown = false;
+            } //s
+            else if (event.keyCode === 65) {
+                vector.pressingLeft = false;
+            } //a
+            else if (event.keyCode === 87) {
+                vector.pressingUp = false;
+            } // w
+            else if (event.keyCode === 32) {
+
+            } // space
+        }
+        */
+
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

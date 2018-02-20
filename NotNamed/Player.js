@@ -76,14 +76,30 @@ module.exports = class Player extends Entity {
                         if ((!Player.getCollisionTop(a, this)) && (!Player.getCollisionTop(b, this))) {
                             this.sub(0, 1);
                         } else {
+                            var millis = Math.floor(Date.now() - this.now);
+                            if (millis >= 20) {
+                                this.now = Date.now();
+                                if (this.pressingSpace && !this.pressingLeft && !this.pressingRight) {
+                                    if (centerTiles[0]) {
+                                        centerTiles[0].state -= 1;
+                                    }
+                                }
+                            }
+
+                            /*
                             var millis = Math.floor((Date.now() - this.now) / 1000);
-                            if (millis >= 2) {
+                            if (millis >= 1) {
                                 if (this.pressingSpace && !this.pressingLeft && !this.pressingRight) {
                                     if (centerTiles[0]) {
                                         centerTiles[0].wall = false;
                                     }
                                 }
                             }
+                            if (this.pressingSpace && centerTiles[0]) {
+                                centerTiles[0].state -= .25;
+                            }
+                            
+                            */
                         }
                     }
                 }
@@ -106,7 +122,7 @@ module.exports = class Player extends Entity {
                             this.add(0, 1);
                         } else {
                             var millis = Math.floor((Date.now() - this.now) / 1000);
-                            if (millis >= 2) {
+                            if (millis >= 1) {
                                 if (this.pressingSpace && !this.pressingLeft && !this.pressingRight) {
                                     if (centerTiles[1]) {
                                         centerTiles[1].wall = false;
@@ -135,7 +151,7 @@ module.exports = class Player extends Entity {
                             this.sub(1, 0);
                         } else {
                             var millis = Math.floor((Date.now() - this.now) / 1000);
-                            if (millis >= 2) {
+                            if (millis >= 1) {
                                 if (this.pressingSpace && !this.pressingDown && !this.pressingUp) {
                                     if (centerTiles[2]) {
                                         centerTiles[2].wall = false;
@@ -164,7 +180,7 @@ module.exports = class Player extends Entity {
                             this.add(1, 0);
                         } else {
                             var millis = Math.floor((Date.now() - this.now) / 1000);
-                            if (millis >= 2) {
+                            if (millis >= 1) {
                                 if (this.pressingSpace && !this.pressingDown && !this.pressingUp) {
                                     if (centerTiles[3]) {
                                         centerTiles[3].wall = false;
