@@ -1,5 +1,5 @@
 //#####const Map = require('./Map.js');
-//#####const Player = require('./Player.js');
+const Player = require('./Player.js');
 var Util = require('./Util.js');
 var Log = require('./Log.js');
 var express = require('express');
@@ -17,7 +17,6 @@ app.use('/client', express.static(__dirname + '/client'));
 //#####Map.create();
 
 serv.listen(gameport);
-//console.log('server started');
 Log("app", "Server Started", "info", true);
 
 var SOCKET_LIST = {};
@@ -27,9 +26,11 @@ io.sockets.on('connection', function (socket) {
     socket.id = Util.getRandomId();
     SOCKET_LIST[socket.id] = socket;
 
-    socket.emit('connected', socket.id);
+    socket.emit('connected', {
+        id: socket.id
+    });
 
-    //#####Player.onConnect(socket);
+    Player.onConnect(socket);
 
     socket.on('disconnect', function () {
         Player.onDisconnect(socket);
@@ -38,14 +39,12 @@ io.sockets.on('connection', function (socket) {
 });
 
 setInterval(function () {
-    //var pack = {
-    //	player: Player.update()
-    //}
-    //#####Player.update();
+    Player.update();
     for (var i in SOCKET_LIST) {
         var socket = SOCKET_LIST[i];
         //#####var mapPack = Player.getMapInfo(socket);
-        //#####var playerPack = Player.getInfo(socket);
-        //#####socket.emit('update', playerPack, mapPack);
+        var playerPack = Player.getInfo(socket);
+        socket.emit('update', playerPack);
     }
+
 }, 1000 / 25);
