@@ -26,6 +26,9 @@ module.exports = class Player {
         this.pressingDown = false;
         this.pressingSpace = false;
 
+        this.mouseX = 0;
+        this.mouseY = 0;
+
         PLAYER_LIST[id] = this;
 
         Log("Player", "Player Created with id: " + id, "info");
@@ -54,7 +57,9 @@ module.exports = class Player {
             id: this.id,
             x: this.x,
             y: this.y,
-            size: this.size
+            size: this.size,
+            mx: this.mouseX,
+            my: this.mouseY
         }
 
         return pack;
@@ -62,6 +67,11 @@ module.exports = class Player {
 
     getDistance(pt) {
         return Math.sqrt(Math.pow(this.x - pt.x, 2) + Math.pow(this.y - pt.y, 2));
+    }
+
+    updateMousePosition(x, y) {
+        this.mouseX = x;
+        this.mouseY = y;
     }
 
     static onConnect(socket) {
@@ -79,6 +89,10 @@ module.exports = class Player {
             } else if (data.inputId === 'space') {
                 player.pressingSpace = data.state;
             }
+        });
+
+        socket.on('mouseUpdate', function (data) {
+            player.updateMousePosition(data.mx, data.my);
         });
     }
 

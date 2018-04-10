@@ -1,47 +1,35 @@
-function Sprite(frames) {
-    this.frames = frames;
-    this.time = timestamp();
-    this.frameCount = 0;
-
-
-    this.render = function (c, cx, cy, size, scale, image, rotate) {
-        //c.save();
-
-        var x = frames[this.frameCount].x;
-        var y = frames[this.frameCount].y;
-        var sx = frames[this.frameCount].sx;
-        var sy = frames[this.frameCount].sy;
-
-        var rx = cx - (size * scale);
-        var ry = cy - (size * scale);
-
-        //c.setTransform(sx * scale, 0, 0, sy * scale, 0, 0);
-
-        if (rotate) {
-            //c.translate(cx, cy);
-            //c.translate(rx, ry);
-
-            c.drawImage(image, x, y, sx, sy, cx, cy, 32, 32);
-        } else {
-            //c.scale(scale, scale);
-            //c.drawImage(image, x, y, sx, sy, rx, ry, 32, 32);
-        }
-
-        //c.restore();
+function Sprite(image, sx, sy, ex, ey, f) {
+    this.image = image;
+    this.startX = sx * 16;
+    this.startY = sy * 16;
+    this.endX = this.startX + ex * 16;
+    this.endY = this.startY + ey * 16;
+    this.frameCount = f || 0;
+    this.frame = 0;
+    if (this.frameCount != 0) {
+        this.frameWidth = (this.endX - this.startX) / this.frameCount;
+    } else {
+        this.frameWidth = this.endX - this.startX;
     }
+    this.frameHeight = this.endY - this.startY;
+}
 
-    this.update = function () {
-        t = timestamp();
-        if (t - this.time > 200) {
-            if (frames.length > 1) {
-                this.frameCount++;
-            }
+Sprite.prototype = {
+    render: function (c, x, y, r, s, f) {
 
-            if (this.frameCount > frames.length - 1) {
-                this.frameCount = 0;
-            }
-            this.time = timestamp();
+        r = r || 0;
+
+        if (this.image && this.image.loaded) {
+            c.save();
+            var frameX = this.startX + (this.frameWidth * f);
+            var frameY = this.startY;
+            var scaledFrameWidth = this.frameWidth * s;
+            var scaledFrameHeight = this.frameHeight * s;
+            c.translate(x, y);
+            //c.translate(scaledFrameWidth/2, scaledFrameHeight/2);
+            c.rotate(r);
+            c.drawImage(this.image, frameX, frameY, this.frameWidth, this.frameHeight, -(scaledFrameWidth / 2), -(scaledFrameHeight / 2), scaledFrameWidth, scaledFrameHeight);
+            c.restore();
         }
-
     }
 }
