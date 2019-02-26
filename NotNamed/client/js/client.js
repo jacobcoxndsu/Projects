@@ -116,6 +116,7 @@
          });
 
  }
+
  document.onkeyup = function (event) {
      if (event.keyCode === 68) //d
          socket.emit('keyPress', {
